@@ -29,11 +29,11 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>cs_760.decision_tree.Driver</mainClass>
+							<mainClass>cs_760.naive_bayes_tan.Driver</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
-						<descriptorRef>full</descriptorRef>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 				</configuration>
 				<executions>

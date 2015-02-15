@@ -19,27 +19,21 @@ public class NaiveBayes {
       model = new ModelTAN(training_data);
   }
 
-  public double p_c(int parentIndex, int parentValue) {
-    return ((double) model.getCounts()[parentIndex][parentValue] + 1)
-        / (model.getTrainingCount() + 2);
+  public double p_c(int classValue) {
+    return model.p_c(classValue);
   }
 
-  public double p_i_c(int attributeIndex, int attributeValue, int parentIndex, int parentValue) {
-    return (double) (model.getCountsPerParent()[attributeIndex][attributeValue][parentValue] + 1)
-        / (model.getCounts()[parentIndex][parentValue] + model.getAttributeList()[attributeIndex]
-            .categoryCount());
+  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
+    return model.p_i_c(attributeIndex, classValue, instance);
   }
 
   public void classify(Instance instance) {
     double sum = 0;
     double[] posterior = new double[model.getClasses().categoryCount()];
     for (int i = 0; i < posterior.length; i++) {
-      posterior[i] = Math.log(p_c(model.getAttributeList().length - 1, i));
-      for (int j = 0; j < model.getAttributeList().length - 1; j++) {
-        posterior[i] =
-            posterior[i]
-                + Math.log(p_i_c(j, (int) instance.getAttributeValue(j).value(),
-                    model.getParentList()[j], i));
+      posterior[i] = Math.log(p_c(i));
+      for (int j = 0; j < model.getAttributeList().length; j++) {
+        posterior[i] = posterior[i] + Math.log(p_i_c(j, i, instance));
       }
       posterior[i] = Math.exp(posterior[i]);
       sum = sum + posterior[i];

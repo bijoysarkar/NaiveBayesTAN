@@ -7,8 +7,8 @@ public abstract class Model {
   private Instance[] instanceList;
   private int[] parentList;
   private int trainingCount;
+  private int[] classCounts;
   private int[][][] countsPerParent;
-  private int[][] counts;
 
   public Model(Data training_data) {
 
@@ -25,29 +25,69 @@ public abstract class Model {
 
     parentList = getParents(classes, attributeList, instanceList);
 
-    trainingCount = 0;
-    countsPerParent = new int[no_of_attributes][][];
-    counts = new int[no_of_attributes][];
+    trainingCount = training_data.getInstanceList().length;
+    classCounts = calculateClassCounts();
+    countsPerParent = calculateCountsPerParent();
+  }
 
-    for (int i = 0; i < no_of_attributes; i++) {
-      countsPerParent[i] =
-          new int[attributeList[i].categoryCount()][attributeList[parentList[i]].categoryCount()];
-      counts[i] = new int[attributeList[i].categoryCount()];
-    }
 
-    for (Instance instance : training_data.getInstanceList()) {
-      trainingCount++;
+  public int[] calculateClassCounts() {
+    int[] countsTable = new int[classes.categoryCount()];
+    for (Instance instance : instanceList)
+      countsTable[instance.getInstanceClass()]++;
+    return countsTable;
+  }
+
+  public int[][][] calculateCountsPerParent() {
+    int no_of_attributes = attributeList.length;
+    int[][][] countsTable = new int[no_of_attributes][][];
+    for (int i = 0; i < no_of_attributes; i++)
+      countsTable[i] = new int[attributeList[i].categoryCount()][classes.categoryCount()];
+    for (Instance instance : instanceList) {
       for (int i = 0; i < no_of_attributes; i++) {
-        countsPerParent[i][(int) instance.getAttributeValue(i).value()][(int) instance
-            .getAttributeValue(parentList[i]).value()]++;
-        counts[i][(int) instance.getAttributeValue(i).value()]++;
+        countsTable[i][(int) instance.getAttributeValue(i).value()][instance.getInstanceClass()]++;
       }
     }
+    return countsTable;
+  }
+
+  public int[][][][][] calculateJointCountsPerParent() {
+    int no_of_attributes = attributeList.length;
+    int[][][][][] countsTable = new int[no_of_attributes][no_of_attributes][][][];
+    for (int i = 0; i < no_of_attributes; i++) {
+      for (int j = 0; j < no_of_attributes; j++) {
+        countsTable[i][j] =
+            new int[attributeList[i].categoryCount()][attributeList[j].categoryCount()][classes
+                .categoryCount()];
+      }
+    }
+    for (Instance instance : instanceList) {
+      for (int i = 0; i < no_of_attributes; i++) {
+        for (int j = 0; j < no_of_attributes; j++) {
+          countsTable[i][j][(int) instance.getAttributeValue(i).value()][(int) instance
+              .getAttributeValue(j).value()][instance.getInstanceClass()]++;
+        }
+      }
+    }
+    return countsTable;
   }
 
   public abstract int[] getParents(NominalAttribute classes, NominalAttribute[] attributeList,
       Instance[] instanceList);
 
+  public double p_c(int classValue) {
+    return ((double) getclassCounts()[classValue] + 1)
+        / (getTrainingCount() + getClasses().categoryCount());
+  }
+
+  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
+    return (double) (getCountsPerParent()[attributeIndex][(int) instance.getAttributeValue(
+        attributeIndex).value()][classValue] + 1)
+        / (getclassCounts()[classValue] + getAttributeList()[attributeIndex]
+            .categoryCount());
+  }
+  
+  
   public NominalAttribute getClasses() {
     return classes;
   }
@@ -68,8 +108,8 @@ public abstract class Model {
     return countsPerParent;
   }
 
-  public int[][] getCounts() {
-    return counts;
+  public int[] getclassCounts() {
+    return classCounts;
   }
 
 }

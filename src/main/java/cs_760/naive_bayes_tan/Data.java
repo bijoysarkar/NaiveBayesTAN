@@ -39,7 +39,7 @@ public class Data {
 
   @SuppressWarnings("unchecked")
   private void loadAttributeList(weka.core.Instance instance) {
-    int numAttributes = instance.numAttributes();
+    int numAttributes = instance.numAttributes() - 1;
     attributeList = new Attribute[numAttributes];
     for (int i = 0; i < numAttributes; i++) {
       weka.core.Attribute wekaAttribute = instance.attribute(i);
@@ -54,13 +54,12 @@ public class Data {
   }
 
   private void loadInstanceList(Instances data) {
-    int numAttributes = data.numAttributes();
+    int numAttributes = data.numAttributes() - 1;
     instanceList = new Instance[data.numInstances()];
     for (int i = 0; i < data.numInstances(); i++) {
       weka.core.Instance wekaInstance = data.instance(i);
       Instance instance =
-          new Instance(numAttributes, classes.getAttribute(wekaInstance
-              .stringValue(numAttributes - 1)));
+          new Instance(numAttributes, classes.getAttribute(wekaInstance.stringValue(numAttributes)));
       for (int j = 0; j < numAttributes; j++) {
         if (wekaInstance.attribute(j).isNominal()) {
           instance.setAttributeValue(j, new NominalAttributeValue(
