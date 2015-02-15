@@ -2,32 +2,33 @@ package cs_760.naive_bayes_tan;
 
 public abstract class Model {
 
-  private NominalAttribute classes;
-  private NominalAttribute[] attributeList;
-  private Instance[] instanceList;
-  private int[] parentList;
-  private int trainingCount;
-  private int[] classCounts;
-  private int[][][] countsPerParent;
+  protected NominalAttribute classes;
+  protected NominalAttribute[] attributeList;
+  protected Instance[] instanceList;
+  protected int trainingCount;
+  protected int[] classCounts;
+  protected int[][][] countsPerParent;
+  protected int[] parentList;
 
   public Model(Data training_data) {
 
     int no_of_attributes = training_data.getAttributeList().length;
 
     classes = training_data.getClasses();
-    attributeList = new NominalAttribute[no_of_attributes];
-    instanceList = training_data.getInstanceList();
 
     // Since all discrete values
+    attributeList = new NominalAttribute[no_of_attributes];
     for (int i = 0; i < no_of_attributes; i++) {
       attributeList[i] = (NominalAttribute) training_data.getAttributeList()[i];
     }
 
-    parentList = getParents(classes, attributeList, instanceList);
-
+    instanceList = training_data.getInstanceList();
     trainingCount = training_data.getInstanceList().length;
     classCounts = calculateClassCounts();
     countsPerParent = calculateCountsPerParent();
+
+    parentList = getParents();
+
   }
 
 
@@ -72,32 +73,30 @@ public abstract class Model {
     return countsTable;
   }
 
-  public abstract int[] getParents(NominalAttribute classes, NominalAttribute[] attributeList,
-      Instance[] instanceList);
+  public abstract int[] getParents();
 
   public double p_c(int classValue) {
     return ((double) getclassCounts()[classValue] + 1)
         / (getTrainingCount() + getClasses().categoryCount());
   }
 
-  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
-    return (double) (getCountsPerParent()[attributeIndex][(int) instance.getAttributeValue(
-        attributeIndex).value()][classValue] + 1)
-        / (getclassCounts()[classValue] + getAttributeList()[attributeIndex]
-            .categoryCount());
-  }
-  
-  
+  public abstract double p_i_c(int attributeIndex, int classValue, Instance instance);
+
   public NominalAttribute getClasses() {
     return classes;
   }
 
-  public NominalAttribute[] getAttributeList() {
-    return attributeList;
+  public int getNoOfAttribute() {
+    return attributeList.length;
   }
 
-  public int[] getParentList() {
-    return parentList;
+
+  public String getAttribute(int i) {
+    return attributeList[i].getName();
+  }
+
+  public String getParent(int i) {
+    return ((parentList[i] == attributeList.length) ? null : attributeList[parentList[i]].getName());
   }
 
   public int getTrainingCount() {

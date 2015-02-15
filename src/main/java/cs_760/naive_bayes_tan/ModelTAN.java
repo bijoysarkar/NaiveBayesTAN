@@ -1,41 +1,21 @@
 package cs_760.naive_bayes_tan;
 
-import java.util.Arrays;
-
 public class ModelTAN extends Model {
+
+  private int[][][][][] jointCountsPerParent;
 
   public ModelTAN(Data training_data) {
     super(training_data);
   }
 
-  public int[] getParents(NominalAttribute classes, NominalAttribute[] attributeList,
-      Instance[] instanceList) {
-    int[] parentList = new int[attributeList.length];
+  @Override
+  public int[] getParents() {
 
-    int no_of_attributes = attributeList.length - 1;
-    int[] classCounts = new int[classes.categoryCount()];
-    int[][][] countsPerParent = new int[no_of_attributes][][];
-    int[][][][][] jointCountsPerParent = new int[no_of_attributes][no_of_attributes][][][];
+    jointCountsPerParent = calculateJointCountsPerParent();
 
-    for (int i = 0; i < no_of_attributes; i++) {
-      countsPerParent[i] = new int[attributeList[i].categoryCount()][classes.categoryCount()];
-      for (int j = 0; j < no_of_attributes; j++) {
-        jointCountsPerParent[i][j] =
-            new int[attributeList[i].categoryCount()][attributeList[j].categoryCount()][classes
-                .categoryCount()];
-      }
-    }
+    int no_of_attributes = jointCountsPerParent.length;
+    int[] parentList = new int[no_of_attributes];
 
-    for (Instance instance : instanceList) {
-      classCounts[instance.getInstanceClass()]++;
-      for (int i = 0; i < no_of_attributes; i++) {
-        countsPerParent[i][(int) instance.getAttributeValue(i).value()][instance.getInstanceClass()]++;
-        for (int j = 0; j < no_of_attributes; j++) {
-          jointCountsPerParent[i][j][(int) instance.getAttributeValue(i).value()][(int) instance
-              .getAttributeValue(j).value()][instance.getInstanceClass()]++;
-        }
-      }
-    }
 
     Graph graph = new Graph(no_of_attributes);
     for (int i = 0; i < no_of_attributes; i++) {
@@ -50,7 +30,7 @@ public class ModelTAN extends Model {
               for (int r = 0; r < classes.categoryCount(); r++) {
                 sum =
                     sum
-                        + (((double) jointCountsPerParent[i][j][p][q][r] + 1) / (instanceList.length + nominalAttribute1
+                        + (((double) jointCountsPerParent[i][j][p][q][r] + 1) / (trainingCount + nominalAttribute1
                             .categoryCount()
                             * nominalAttribute2.categoryCount()
                             * classes.categoryCount()))
@@ -70,10 +50,29 @@ public class ModelTAN extends Model {
         }
       }
     }
-    
+
     parentList = graph.maximumSpanningTree();
-    System.out.println(Arrays.toString(parentList));
+    //System.out.println(Arrays.toString(parentList));
+    //System.out.println(graph);
     return parentList;
+  }
+
+  @Override
+  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
+    int parentIndex = parentList[attributeIndex];
+    if (parentIndex == attributeList.length) {
+      //Only class variable is parent
+      return (double) (countsPerParent[attributeIndex][(int) instance.getAttributeValue(
+          attributeIndex).value()][classValue] + 1)
+          / (classCounts[classValue] + attributeList[attributeIndex].categoryCount());
+    } else {
+      //Two parent case
+      return (double) (jointCountsPerParent[attributeIndex][parentIndex][(int) instance
+          .getAttributeValue(attributeIndex).value()][(int) instance.getAttributeValue(parentIndex)
+          .value()][classValue] + 1)
+          / (countsPerParent[parentIndex][(int) instance.getAttributeValue(parentIndex).value()][classValue] + attributeList[attributeIndex]
+              .categoryCount());
+    }
   }
 
 }

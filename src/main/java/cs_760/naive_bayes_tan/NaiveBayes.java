@@ -19,21 +19,29 @@ public class NaiveBayes {
       model = new ModelTAN(training_data);
   }
 
-  public double p_c(int classValue) {
-    return model.p_c(classValue);
+  public void test() {
+    
+    for(int i = 0; i< model.getNoOfAttribute(); i++){
+      String parent = model.getParent(i);
+      System.out.println(model.getAttribute(i)+" "+((parent==null)?"":parent+" ")+"class");
+    }
+    System.out.println();
+    Data test_data = new Data(TEST_DATA);
+    int total_count = test_data.getInstanceList().length;
+    int count = 0;
+    for (Instance instance : test_data.getInstanceList())
+      if(classify(instance))
+        count++;
+    System.out.println("\n"+count);
   }
-
-  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
-    return model.p_i_c(attributeIndex, classValue, instance);
-  }
-
-  public void classify(Instance instance) {
+  
+  public boolean classify(Instance instance) {
     double sum = 0;
     double[] posterior = new double[model.getClasses().categoryCount()];
     for (int i = 0; i < posterior.length; i++) {
-      posterior[i] = Math.log(p_c(i));
-      for (int j = 0; j < model.getAttributeList().length; j++) {
-        posterior[i] = posterior[i] + Math.log(p_i_c(j, i, instance));
+      posterior[i] = Math.log(model.p_c(i));
+      for (int j = 0; j < model.getNoOfAttribute(); j++) {
+        posterior[i] = posterior[i] + Math.log(model.p_i_c(j, i, instance));
       }
       posterior[i] = Math.exp(posterior[i]);
       sum = sum + posterior[i];
@@ -51,11 +59,8 @@ public class NaiveBayes {
 
     System.out.println(model.getClasses().categoryName(maxIndex) + " "
         + model.getClasses().categoryName(instance.getInstanceClass()) + " " + max);
+    
+    return (maxIndex==instance.getInstanceClass());
   }
 
-  public void test() {
-    Data test_data = new Data(TEST_DATA);
-    for (Instance instance : test_data.getInstanceList())
-      classify(instance);
-  }
 }

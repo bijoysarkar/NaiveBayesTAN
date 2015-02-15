@@ -6,13 +6,21 @@ public class ModelNaiveBayes extends Model {
     super(training_data);
   }
 
-  public int[] getParents(NominalAttribute classes, NominalAttribute[] attributeList,
-      Instance[] instanceList) {
+  @Override
+  public int[] getParents() {
     int[] parentList = new int[attributeList.length];
     for (int i = 0; i < attributeList.length; i++) {
       parentList[i] = parentList.length - 1;
     }
     return parentList;
+  }
+  
+  @Override
+  public double p_i_c(int attributeIndex, int classValue, Instance instance) {
+    return (double) (countsPerParent[attributeIndex][(int) instance.getAttributeValue(
+        attributeIndex).value()][classValue] + 1)
+        / (classCounts[classValue] + attributeList[attributeIndex]
+            .categoryCount());
   }
 
 }

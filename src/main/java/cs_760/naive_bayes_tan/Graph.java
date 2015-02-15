@@ -18,8 +18,7 @@ public class Graph {
 
   public int[] maximumSpanningTree() {
     int no_of_attributes = graph.length;
-    int[] mark = new int[no_of_attributes+1];
-    mark[mark.length-1] = no_of_attributes;
+    int[] mark = new int[no_of_attributes];
     for (int i = 0; i < no_of_attributes; i++) {
       mark[i] = -1;
     }
@@ -48,16 +47,6 @@ public class Graph {
     }
     return sb.toString();
   }
-
-  /*
-   * public static void main(String[] args) { PriorityQueue<Edge> queue = new PriorityQueue<Edge>();
-   * queue.add(new Edge(1, 2, 0.5)); queue.add(new Edge(1, 2, 0.6)); queue.add(new Edge(2, 3, 0.5));
-   * queue.add(new Edge(2, 2, 0.5)); queue.add(new Edge(1, 1, 0.5)); queue.add(new Edge(2, 2, 0.5));
-   * queue.add(new Edge(3, 2, 0.5));
-   * 
-   * while (!queue.isEmpty()) System.out.println(queue.poll()); }
-   */
-
 }
 
 
