@@ -28,7 +28,7 @@ public class Bayes {
     model.train(sample_size);
   }
 
-  public int test(boolean print) {
+  public double test(boolean print) {
 
     if (print) {
       for (int i = 0; i < model.getNoOfAttribute(); i++) {
@@ -46,7 +46,7 @@ public class Bayes {
         count++;
     if(print)
       System.out.println("\n" + count);
-    return count;
+    return (double)count/test_data.getInstanceList().length;
   }
 
   public boolean classify(Instance instance, boolean print) {

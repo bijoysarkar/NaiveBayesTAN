@@ -1,7 +1,5 @@
 package cs_760.naive_bayes_tan;
 
-import java.util.Arrays;
-
 public abstract class Model {
 
   protected NominalAttribute classes;

@@ -14,7 +14,7 @@ public class Data {
   
   public Data(String training_file) {
     read(training_file);
-    random = new Random(0);
+    random = new Random();
   }
 
   private void read(String data_file) {

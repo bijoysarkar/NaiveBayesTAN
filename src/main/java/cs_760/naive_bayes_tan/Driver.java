@@ -11,17 +11,19 @@ public class Driver {
   public void part2(String training_data, String test_data, String type) {
     Bayes naiveBayes = new Bayes(training_data, test_data, type);
     int[] sample_sizes = {25, 50, 100};
+    int repeat_count = 4;
     for (int sample_size : sample_sizes) {
-      for (int i = 0; i < 4; i++) {
+      double sum = 0;
+      for (int i = 0; i < repeat_count; i++) {
         naiveBayes.train(sample_size);
-        System.out.println(sample_size+"->"+naiveBayes.test(false));
+        sum+=naiveBayes.test(false);
       }
+      System.out.println(sample_size+"\t"+sum/repeat_count);
     }
-
   }
 
   public static void main(String[] args) {
     Driver driver = new Driver();
-    driver.part2(args[0], args[1], args[2]);
+    driver.part1(args[0], args[1], args[2]);
   }
 }
