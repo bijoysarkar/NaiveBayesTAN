@@ -1,41 +1,55 @@
 package cs_760.naive_bayes_tan;
 
-public class NaiveBayes {
+public class Bayes {
 
   private final String TRAINING_DATA;
   private final String TEST_DATA;
-  private Model model;
+  private final String TYPE;
+  private final Model model;
 
-  public NaiveBayes(String trainingData, String testData) {
+  public Bayes(String trainingData, String testData, String type) {
     this.TRAINING_DATA = trainingData;
     this.TEST_DATA = testData;
-  }
+    this.TYPE = type;
 
-  public void train(String type) {
     Data training_data = new Data(TRAINING_DATA);
-    if ("n".equals(type))
+    if ("n".equals(TYPE))
       model = new ModelNaiveBayes(training_data);
     else
       model = new ModelTAN(training_data);
+
   }
 
-  public void test() {
-    
-    for(int i = 0; i< model.getNoOfAttribute(); i++){
-      String parent = model.getParent(i);
-      System.out.println(model.getAttribute(i)+" "+((parent==null)?"":parent+" ")+"class");
+  public void train() {
+    model.train();
+  }
+
+  public void train(int sample_size) {
+    model.train(sample_size);
+  }
+
+  public int test(boolean print) {
+
+    if (print) {
+      for (int i = 0; i < model.getNoOfAttribute(); i++) {
+        String parent = model.getParent(i);
+        System.out.println(model.getAttribute(i) + " " + ((parent == null) ? "" : parent + " ")
+            + "class");
+      }
+      System.out.println();
     }
-    System.out.println();
     Data test_data = new Data(TEST_DATA);
-    int total_count = test_data.getInstanceList().length;
+    // int total_count = test_data.getInstanceList().length;
     int count = 0;
     for (Instance instance : test_data.getInstanceList())
-      if(classify(instance))
+      if (classify(instance, print))
         count++;
-    System.out.println("\n"+count);
+    if(print)
+      System.out.println("\n" + count);
+    return count;
   }
-  
-  public boolean classify(Instance instance) {
+
+  public boolean classify(Instance instance, boolean print) {
     double sum = 0;
     double[] posterior = new double[model.getClasses().categoryCount()];
     for (int i = 0; i < posterior.length; i++) {
@@ -57,10 +71,11 @@ public class NaiveBayes {
       }
     }
 
-    System.out.println(model.getClasses().categoryName(maxIndex) + " "
-        + model.getClasses().categoryName(instance.getInstanceClass()) + " " + max);
-    
-    return (maxIndex==instance.getInstanceClass());
+    if (print)
+      System.out.println(model.getClasses().categoryName(maxIndex) + " "
+          + model.getClasses().categoryName(instance.getInstanceClass()) + " " + max);
+
+    return (maxIndex == instance.getInstanceClass());
   }
 
 }

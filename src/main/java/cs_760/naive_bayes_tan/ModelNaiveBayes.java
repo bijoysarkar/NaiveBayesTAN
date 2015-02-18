@@ -7,7 +7,7 @@ public class ModelNaiveBayes extends Model {
   }
 
   @Override
-  public int[] getParents() {
+  public int[] getParents(Instance[] instanceList) {
     int[] parentList = new int[attributeList.length];
     for (int i = 0; i < attributeList.length; i++) {
       parentList[i] = parentList.length - 1;

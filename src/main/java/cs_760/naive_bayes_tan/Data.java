@@ -1,6 +1,5 @@
 package cs_760.naive_bayes_tan;
 
-import java.util.List;
 import java.util.Random;
 
 import weka.core.Instances;
@@ -11,9 +10,11 @@ public class Data {
   private NominalAttribute classes;
   private Attribute[] attributeList;
   private Instance[] instanceList;
-
+  private Random random;
+  
   public Data(String training_file) {
     read(training_file);
+    random = new Random(0);
   }
 
   private void read(String data_file) {
@@ -84,19 +85,11 @@ public class Data {
     return instanceList;
   }
 
-  public Instance[] randomSample(List<Instance> list, int sample_size) {
-    int size = list.size();
-    if (size < sample_size)
-      return null;
+  public Instance[] randomSample(int sample_size) {
     Instance[] sampleList = new Instance[sample_size];
-    Random random = new Random();
     for (int i = 0; i < sample_size; i++) {
       // Sample with replacement
-      // sampleList[i] = list.get(random.nextInt(size));
-
-      // Sample without replacement
-      sampleList[i] = list.remove(random.nextInt(size));
-      size--;
+      sampleList[i] = instanceList[random.nextInt(instanceList.length)];
     }
     return sampleList;
   }

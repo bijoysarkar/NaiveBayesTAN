@@ -9,9 +9,9 @@ public class ModelTAN extends Model {
   }
 
   @Override
-  public int[] getParents() {
+  public int[] getParents(Instance[] instanceList) {
 
-    jointCountsPerParent = calculateJointCountsPerParent();
+    jointCountsPerParent = calculateJointCountsPerParent(instanceList);
 
     int no_of_attributes = jointCountsPerParent.length;
     int[] parentList = new int[no_of_attributes];
@@ -30,7 +30,7 @@ public class ModelTAN extends Model {
               for (int r = 0; r < classes.categoryCount(); r++) {
                 sum =
                     sum
-                        + (((double) jointCountsPerParent[i][j][p][q][r] + 1) / (trainingCount + nominalAttribute1
+                        + (((double) jointCountsPerParent[i][j][p][q][r] + 1) / (instanceList.length + nominalAttribute1
                             .categoryCount()
                             * nominalAttribute2.categoryCount()
                             * classes.categoryCount()))
