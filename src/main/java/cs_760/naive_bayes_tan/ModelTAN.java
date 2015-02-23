@@ -52,8 +52,8 @@ public class ModelTAN extends Model {
     }
 
     parentList = graph.maximumSpanningTree();
-    //System.out.println(Arrays.toString(parentList));
-    //System.out.println(graph);
+    // System.out.println(Arrays.toString(parentList));
+    // System.out.println(graph);
     return parentList;
   }
 
@@ -61,12 +61,12 @@ public class ModelTAN extends Model {
   public double p_i_c(int attributeIndex, int classValue, Instance instance) {
     int parentIndex = parentList[attributeIndex];
     if (parentIndex == attributeList.length) {
-      //Only class variable is parent
+      // Only class variable is parent
       return (double) (countsPerParent[attributeIndex][(int) instance.getAttributeValue(
           attributeIndex).value()][classValue] + 1)
           / (classCounts[classValue] + attributeList[attributeIndex].categoryCount());
     } else {
-      //Two parent case
+      // Two parent case
       return (double) (jointCountsPerParent[attributeIndex][parentIndex][(int) instance
           .getAttributeValue(attributeIndex).value()][(int) instance.getAttributeValue(parentIndex)
           .value()][classValue] + 1)

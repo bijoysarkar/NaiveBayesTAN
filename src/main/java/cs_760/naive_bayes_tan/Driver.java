@@ -16,10 +16,16 @@ public class Driver {
       double sum = 0;
       for (int i = 0; i < repeat_count; i++) {
         naiveBayes.train(sample_size);
-        sum+=naiveBayes.test(false);
+        sum += naiveBayes.test(false);
       }
-      System.out.println(sample_size+"\t"+sum/repeat_count);
+      System.out.println(sample_size + "\t" + sum / repeat_count);
     }
+  }
+
+  public void part3(String training_data, String test_data, String type) {
+    Bayes naiveBayes = new Bayes(training_data, test_data, type);
+    naiveBayes.train();
+    naiveBayes.roc();
   }
 
   public static void main(String[] args) {

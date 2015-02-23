@@ -10,11 +10,11 @@ public abstract class Model {
   protected int[] parentList;
 
   private Data training_data;
-  
+
   public Model(Data training_data) {
 
     this.training_data = training_data;
-    
+
     int no_of_attributes = training_data.getAttributeList().length;
     classes = training_data.getClasses();
 
@@ -25,22 +25,22 @@ public abstract class Model {
     }
     trainingInstanceCount = -1;
   }
-  
-  public void train(){
+
+  public void train() {
     train(training_data.getInstanceList());
   }
-  
-  public void train(int sample_size){
-    train(training_data.randomSample(sample_size));
+
+  public void train(int sample_size) {
+    train(training_data.sample(sample_size));
   }
 
-  public void train(Instance[] instanceList){
+  public void train(Instance[] instanceList) {
     trainingInstanceCount = instanceList.length;
     classCounts = calculateClassCounts(instanceList);
     countsPerParent = calculateCountsPerParent(instanceList);
     parentList = getParents(instanceList);
   }
-  
+
   public int[] calculateClassCounts(Instance[] instanceList) {
     int[] countsTable = new int[classes.categoryCount()];
     for (Instance instance : instanceList)
